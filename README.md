@@ -1,6 +1,6 @@
 # ML Model
 
-Pytorch-based model for detecting malicious JavaScript
+Pytorch-based model for detecting malicious JavaScript. Assumes preprocessed files produced by [js-mal-catcher](https://github.com/crazyeights225/js-mal-catcher).
 
 ## Splitting Data
 
