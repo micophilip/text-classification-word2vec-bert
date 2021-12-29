@@ -8,6 +8,7 @@ from dataset import get_vocab
 
 class Word2VecEmbedding:
     def __init__(self, word2vec_file: str):
+        self.embedding_type = 'word2vec'
         model = word2vec.Word2Vec.load(word2vec_file)
         embedding_dim = model.vector_size
         model.wv["<pad>"] = np.full((1, embedding_dim), 0)
@@ -17,7 +18,7 @@ class Word2VecEmbedding:
         self.embedding_dim = embedding_dim
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    def get_word2vec_embeddings(self, text):
+    def get_embeddings(self, text):
         embedded = [[self.model[word] for word in sentence.split(' ')] for sentence in text]
         embedded = torch.FloatTensor(np.array(embedded)).to(self.device)
         embedded = torch.permute(embedded, [1, 0, 2])
@@ -27,6 +28,7 @@ class Word2VecEmbedding:
 class BERTEmbedding:
 
     def __init__(self, vocab_file: str):
+        self.embedding_type = 'bert'
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         word2idx, idx2word, vocab_size = get_vocab(vocab_file)
@@ -43,7 +45,7 @@ class BERTEmbedding:
         self.bert.resize_token_embeddings(len(self.tokenizer))
         self.bert.eval()
 
-    def get_bert_embeddings(self, text):
+    def get_embeddings(self, text):
         tokenized_texts = [self.tokenizer.tokenize(sentence) for sentence in text]
 
         indexed_tokens = [self.tokenizer.convert_tokens_to_ids(tokenized_text) for tokenized_text in tokenized_texts]

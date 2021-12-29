@@ -22,16 +22,10 @@ class JSMalCatcherModel(nn.Module):
         bidirectional = True
         dropout = 0.5
         embedding_dim = embedding_obj.embedding_dim
+        self.embedding_type = 'default' if isinstance(embedding_obj, nn.Embedding) else embedding_obj.embedding_type
+        self.embedding = embedding_obj if self.embedding_type == 'default' else embedding_obj.get_embeddings
 
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-        self.embedding_type = 'bert' if embedding_obj.__class__.__name__ == 'BERTEmbedding' \
-            else 'word2vec' if embedding_obj.__class__.__name__ == 'Word2VecEmbedding' \
-            else 'default'
-
-        self.embedding = embedding_obj.get_bert_embeddings if self.embedding_type == 'bert' \
-            else embedding_obj.get_word2vec_embeddings if self.embedding_type == 'word2vec' \
-            else embedding_obj
 
         self.lstm = nn.LSTM(embedding_dim,
                             hidden_dim,
